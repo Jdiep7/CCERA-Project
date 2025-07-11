@@ -119,7 +119,7 @@ ax.set_xlabel("Doppler Velocity (km/s)")
 ax.set_ylabel("Time (index)")
 
 plt.colorbar(im, use_gridspec=True)
-ax.plot(calculatedvLSR, times, color='white', marker='o', linestyle='-', linewidth=2, markersize=5, label='vLSR')
+#ax.plot(calculatedvLSR, times, color='white', marker='o', linestyle='-', linewidth=2, markersize=5, label='vLSR')
 
 ax.legend(loc='upper right')
 
