@@ -132,6 +132,6 @@ for row, file in enumerate(files) :
     plt.pause (0.5)
     #time.sleep(0.5)
 
-plt.plot(vals,times,'w.')
+#plt.plot(vals,times,'w.')
 plt.show()
 
