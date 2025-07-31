@@ -120,6 +120,7 @@ def plotHeatMap(v_dopplers, powers, metadata):
 
     mapData = np.zeros((nRows, nCols))
     times = []
+    calculatedvLSR = []
 
     start_time = metadata[0]['t_start']
     end_time = metadata[-1]['t_start'] + metadata[-1]['run_time']
@@ -130,6 +131,8 @@ def plotHeatMap(v_dopplers, powers, metadata):
         mapData[row] = power
         rel_time = (meta['t_start'] - start_time) / 3600.0
         times.append(rel_time)
+        vLSR = meta['vlsr']
+        calculatedvLSR.append(vLSR)
 
     fig, ax = plt.subplots(figsize=(10, 6))
     im = ax.imshow(
@@ -142,6 +145,7 @@ def plotHeatMap(v_dopplers, powers, metadata):
 
     data_series_name = os.path.basename(os.path.dirname("./AL045/"))
     plot_title = f"HI Spectrum Time Series: {data_series_name}\nStart Time: {start_time_str}"
+    ax.plot(calculatedvLSR, times, color='black', marker='o', linestyle='-', linewidth=1, markersize=1, label='vLSR')
     ax.set_title(plot_title)
     ax.set_xlabel("Doppler Velocity (km/s)")
     ax.set_ylabel("Time (hours since start)")
@@ -149,7 +153,7 @@ def plotHeatMap(v_dopplers, powers, metadata):
 
     plt.show()
     
-def plotAnimation(v_dopplers, powers, base_names):
+def plotAnimation(v_dopplers, powers, base_names):        
     # set up for animation
     fig = plt.figure(1)
     #fig.canvas.set_window_title('21cm Spectrum') 
@@ -176,8 +180,23 @@ def plotAnimation(v_dopplers, powers, base_names):
         plt.pause(0.5)
         #time.sleep(0.5)
 
-    #plt.plot(vals,times,'w.')
+    
+def plotMountainRange(v_dopplers, powers):
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    offset = 10.0
+    vDoppler = v_dopplers[0]
+
+    for i, power in enumerate(powers):
+        ax.plot(vDoppler, power + i * offset, color='blue', linewidth=1)
+
+    ax.set_xlabel("Doppler Velocity (km/s)")
+    ax.set_ylabel("Power + offset")
+    ax.set_title("2D Waterfall Plot of HI Spectra")
+
+    plt.tight_layout()
     plt.show()
+    
 
 
 t_start, t_stop = '2024-07-10-1001', '2024-07-10-1306'
@@ -185,6 +204,7 @@ base_names = getBaseNames()
 metadata = listMetaData(base_names)
 v_dopplers, powers = getSpectra(base_names)
 plotHeatMap(v_dopplers, powers, metadata)
+plotMountainRange(v_dopplers, powers)
 plotAnimation(v_dopplers, powers, base_names)
 
 
