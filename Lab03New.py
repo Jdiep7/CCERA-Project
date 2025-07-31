@@ -21,26 +21,33 @@ def airy(mean_time, base_temp, peak_temp, width) :
         I *= I
         airy_function.append(I) 
     return times, base_temp + peak_temp*np.array(airy_function)
+
+
+def readMetaData(base_name):
+    with open(base_name + ".json") as json_file : 
+        metadata = json.load(json_file)
+        print("file={0:s} \nmetadata={1:s}".format(base_name,str(metadata)))
+    return metadata
+    
+def readTimeSeries(metadata):
+    data_file = base_name + "_2.sum" 
+    power = np.fromfile(data_file, dtype=np.float32)
+    nVals = len(power)
+    print("Number of data values read={0:d}".format(nVals))
+
+    t_start, t_stop = 0., nVals*metadata['t_sample']
+    times = np.linspace(t_start, t_stop, nVals)
+
+    calib = 17.3
+    power *= calib
+    
+    return power, times
 # begin execution
 
 # this line specifies the data set to be used 
-base_name = "./Lab03_data/2024-07-03-1340"
-
-# get the metadata, which provides information about the data file we are reading 
-with open(base_name + ".json") as json_file : metadata = json.load(json_file)
-print("file={0:s} \nmetadata={1:s}".format(base_name,str(metadata)))
-
-# read in the data time series
-data_file = base_name + "_2.sum" 
-power = np.fromfile(data_file, dtype=np.float32)
-nVals = len(power)
-print("Number of data values read={0:d}".format(nVals))
-
-t_start, t_stop = 0., nVals*metadata['t_sample']
-times = np.linspace(t_start, t_stop, nVals)
-
-calib = 17.3
-power *= calib
+base_name = "./Lab03_data/2024-07-03-1340" 
+metadata = readMetaData(base_name)
+power, times = readTimeSeries()
 
 mean_time, base_temp, peak_temp, width = 1855., 150., 13250., 325.
 
@@ -48,8 +55,8 @@ airy_times, airy_function = airy(mean_time, base_temp, peak_temp, width)
 
 transit_gmt = metadata['t_start'] 
 time_string = datetime.fromtimestamp(transit_gmt).strftime('%Y-%m-%d %H:%M:%S')
-                                 
-print(time_string)                                 
+
+#For Users to do                               
 plt.plot(times, power, 'b.', label="Measured Power")
 plt.plot(airy_times, airy_function, 'r-', label="Airy Function")
 plt.title("Antenna Temperature based on Time")
