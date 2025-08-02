@@ -26,7 +26,6 @@ def getVdoppler(freqs):
 
 def getPower(base_name):
     metadata = readMetadata(base_name)
-    fft_size = metadata['fft_size']
     chan = 2
     data_file = base_name + "_{0:d}.avg".format(chan)
     vals = np.fromfile(data_file, dtype=np.float32)
